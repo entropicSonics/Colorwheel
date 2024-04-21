@@ -2,7 +2,7 @@ let colors = [
     [255, 0, 0],    // Red
     [255, 127, 0],  // Orange
     [255, 255, 0],  // Yellow
-    [127, 255, 0],  // Yellow-Green
+    [127, 255, 0],  // Yellow-Greenhttps://www.youtube.com/
     [0, 255, 0],    // Green
     [0, 255, 127],  // Blue-Green
     [0, 255, 255],  // Cyan
@@ -16,7 +16,10 @@ let colors = [
 let shape = [];
 
 // Note numbers array with notes from C2 to C4
-let noteNumbers = [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59];
+// let noteNumbers = [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59];
+
+// Note numbers array with 12 notes in the A natural minor scale from A2 onwards
+let noteNumbers = [45, 47, 48, 50, 52, 53, 55, 57, 59, 60, 62, 64];
 
 // let noteNumbers = [36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48];
 // Note numbers array with white notes only
@@ -26,11 +29,11 @@ let notes = [];
 let activatedNotes = [];
 
 let lastBeatTime = 0; // The time of the last beat
-let beatInterval = 60 / 160 * 1000; // The interval between beats in milliseconds
+let beatInterval = 60 / 120 * 1000/4; // The interval between beats in milliseconds
 
 let triggerIndex = 0; // The index of the current note to be triggered
 
-function setup() {
+    function setup() {
     createCanvas(650, 650);
     angleMode(DEGREES); // Change the mode to DEGREES
 
@@ -74,14 +77,6 @@ function draw() {
     for (const note in notes) {
         notes[note].hover();
         notes[note].display();
-
-        // If user clicks on a note, activate it
-        if (mouseIsPressed) {
-            let d = dist(mouseX, mouseY, notes[note].x, notes[note].y);
-            if (d < 10) {
-                notes[note].activate();
-            }
-        }
     }
 }
 
@@ -111,8 +106,21 @@ function createCircle(radius, notes, colors) {
             // fill(r, g, b); // Set the fill color with the adjusted lightness
             // ellipse(x, y, 20, 20); // Draw the ellipse
 
-            let note = new Note(x, y, scales[j], color(r, g, b));
+            let note = new Note(x, y, scales[j % scales.length], color(r, g, b));
             notes.push(note);
+        }
+    }
+}
+
+function mouseClicked() {
+    for (const note in notes) {
+        let d = dist(mouseX, mouseY, notes[note].x, notes[note].y);
+        if (d < 10) {
+            if (notes[note].activated) {
+                notes[note].deactivate();
+            } else {
+                notes[note].activate();
+            }
         }
     }
 }
@@ -189,9 +197,6 @@ class Note {
 
         // this.color = this.originalColor;
         this.stroke = this.originalColor;
-
-        // Retain the size at 20
-        this.size = 20;
 
         // Remove this note from the activatedNotes array
         activatedNotes = activatedNotes.filter(note => note !== this);
